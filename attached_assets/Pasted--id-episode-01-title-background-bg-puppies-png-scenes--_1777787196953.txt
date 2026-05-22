@@ -1,0 +1,273 @@
+ "id": "episode-01",
+  "title": "안녕하세요! 안녕!",
+  "background": "bg-puppies.png",
+  "scenes": [
+    {
+      "id": "s0-welcome",
+      "drColi": {
+        "animation": "talk",
+        "say": [
+          "Hello {name}! My name is Dr. Coli.",
+          "Bori and I were waiting for you!"
+        ]
+      },
+      "bori": {
+        "animation": "look"
+      },
+      "interaction": {
+        "type": "none"
+      }
+    },
+    {
+      "id": "s1-teach-seonsaengnim",
+      "drColi": {
+        "animation": "talk",
+        "say": [
+          "Bori wants to say teacher in Korean, but she forgot the word!",
+          "Teacher in Korean is 선생님.",
+          "Can you help Bori?"
+        ]
+      },
+      "bori": {
+        "animation": "look"
+      },
+      "interaction": {
+        "type": "mic",
+        "targets": [
+          "선생님",
+          "선생님이에요",
+          "선생님 입니다"
+        ],
+        "prompt": "Tap the mic, then say 선생님!",
+        "strictness": "easy",
+
+        "maxSilenceAttempts": 2,
+  "onSilenceSay": [
+  "Oops! Bori couldn’t hear 선생님! Let’s try again!"
+],
+"onSilenceMaxSay": [
+  "Hmm… Bori’s ears are being silly today. Let’s keep going and practice 선생님 later!"
+],
+
+        "onSuccessSay": [
+          "Wonderful {name}!",
+          "Excellent! That’s one star!"
+        ],
+        "onFailSay": [
+          "So close! Let’s try together one more time.",
+          "Listen carefully: 선생님.",
+          "Now your turn, {name}!"
+        ]
+      }
+    },
+    {
+      "id": "s2-meet-bori",
+      "drColi": {
+        "animation": "talk",
+        "say": [
+          "{name}, Bori likes you!"
+        ]
+      },
+      "bori": {
+        "animation": "wave"
+      },
+      "interaction": {
+        "type": "none"
+      }
+    },
+    {
+      "id": "s3a-intro-annyonghaseyo",
+      "drColi": {
+        "animation": "talk",
+        "say": [
+          "To say hello to adults, we say 안녕하세요!"
+        ]
+      },
+      "bori": {
+        "animation": "idle"
+      },
+      "interaction": {
+        "type": "none"
+      }
+    },
+    {
+      "id": "s3b-bow-like-this",
+      "drColi": {
+        "animation": "talk",
+        "say": [
+          "When we say 안녕하세요, we do a little bow. Like this!"
+        ]
+      },
+      "bori": {
+        "animation": "bow"
+      },
+      "interaction": {
+        "type": "none"
+      }
+    },
+    {
+      "id": "s4-repeat-annyonghaseyo",
+      "drColi": {
+        "animation": "bow",
+        "say": [
+          "Now let’s try it together with Bori.",
+          "Ready? 안녕하세요!"
+        ]
+      },
+      "bori": {
+        "animation": "bow"
+      },
+      "interaction": {
+        "type": "mic",
+        "targets": [
+          "안녕하세요",
+          "안녕하세이요",
+          "안녕하세요 선생님"
+        ],
+        "prompt": "Tap the mic, then say 안녕하세요!",
+        "strictness": "easy",
+        "maxSilenceAttempts": 2,
+ "onSilenceSay": [
+  "Oops! Bori didn’t catch 안녕하세요! Let’s try again!"
+],
+"onSilenceMaxSay": [
+  "Bori's ears are being silly today. We’ll practice 안녕하세요 later!"
+],
+        "onSuccessSay": [
+          "Great job, {name}!",
+          "That’s another star!"
+        ],
+        "onFailSay": [
+          "So close! Let’s try together one more time.",
+          "Listen carefully: 선생님.",
+          "Now your turn, {name}!"
+        ]
+      }
+    },
+    {
+      "id": "s5-emoji-check-annyonghaseyo",
+      "drColi": {
+        "animation": "talk",
+        "say": [
+          "{name}, help Bori remember!",
+          "When we say 안녕하세요, what do we do?"
+        ]
+      },
+      "bori": {
+        "animation": "look"
+      },
+      "interaction": {
+        "type": "emoji",
+        "choices": [
+          "🙇‍♀️",
+          "👋",
+          "🏃‍♀️"
+        ],
+        "correctIndex": 0,
+        "onCorrectSay": [
+          "Yes! We bow when we say 안녕하세요!",
+          "Excellent, {name}! That’s one more star!"
+        ],
+        "onWrongSay": [
+          "Nice try! Let’s try again."
+        ]
+      }
+    },
+    {
+      "id": "s6-intro-annyeong",
+      "drColi": {
+        "animation": "talk",
+        "say": [
+          "When you see your friends or Bori, you can say: 안녕!",
+          "We say 안녕 with a wave!"
+        ]
+      },
+      "bori": {
+        "animation": "wave"
+      },
+      "interaction": {
+        "type": "none"
+      }
+    },
+    {
+      "id": "s7-emoji-check-annyeong",
+      "drColi": {
+        "animation": "talk",
+        "say": [
+          "{name}, when we say 안녕, what do we do?"
+        ]
+      },
+      "bori": {
+        "animation": "look"
+      },
+      "interaction": {
+        "type": "emoji",
+        "choices": [
+          "🙇‍♀️",
+          "👋",
+          "🏃‍♀️"
+        ],
+        "correctIndex": 1,
+        "onCorrectSay": [
+          "Yes, {name}! We wave when we say 안녕!",
+          "Wonderful! Another star!"
+        ],
+        "onWrongSay": [
+          "Nice try! Let’s try again."
+        ]
+      }
+    },
+    {
+      "id": "s8-hello-seonsaengnim",
+      "drColi": {
+        "animation": "talk",
+        "say": [
+          "{name}, to say hello to a teacher in Korean, we say 안녕하세요 선생님!"
+        ]
+      },
+      "bori": {
+        "animation": "idle"
+      },
+      "interaction": {
+        "type": "none"
+      }
+    },
+    {
+      "id": "s9-repeat-annyeonghaseyo-seonsaengnim",
+      "drColi": {
+        "animation": "bow",
+        "say": [
+          "Ready to help Bori say hello to 선생님?"
+        ]
+      },
+      "bori": {
+        "animation": "bow"
+      },
+      "interaction": {
+        "type": "mic",
+        "targets": [
+          "안녕하세요 선생님",
+          "안녕하세요",
+          "안녕하세이요"
+        ],
+        "prompt": "Tap the mic, then say 안녕하세요 선생님!",
+        "strictness": "easy",
+
+        "maxSilenceAttempts": 2,
+ "onSilenceSay": [
+  "Oops! Bori didn’t catch 안녕하세요 선생님! Let’s try again!"
+],
+"onSilenceMaxSay": [
+  "Bori's ears are being silly today. We’ll practice 안녕하세요 선생님 later!"
+],
+        "onSuccessSay": [
+          "Thanks to you {name}, Bori can greet 선생님!",
+          "Wonderful! You earned all the stars!"
+        ],
+        "onFailSay": [
+          "So close! Let’s try together one more time.",
+          "Listen carefully: 안녕하세요 선생님.",
+          "Now your turn, {name}!"
+        ]
+      }
+    },

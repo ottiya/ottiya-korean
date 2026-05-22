@@ -1,0 +1,80 @@
+Update the “Let’s Practice” page and make it a free practice hub.
+
+Current issue:
+The page has a large beige rectangle that does not do anything yet. I want that area to become the main practice area.
+
+Main goal:
+Let kids freely practice Korean words they have already learned, while always showing Lesson 1 content by default.
+
+Practice content rules:
+- Lesson 1 should always be the default practice content.
+- If the user has not completed any lessons yet, show Lesson 1 words.
+- If the user has completed Lesson 1, continue showing Lesson 1 words.
+- Once the user completes Lesson 2, mix Lesson 1 + Lesson 2 words.
+- Once the user completes Lesson 3, mix Lessons 1–3 words.
+- Continue this pattern for future lessons.
+- Do not show an empty practice page.
+
+Main practice area:
+Use the beige rectangle as the active practice card.
+
+When the page opens:
+- automatically select the first available practice word
+- show the Korean word large
+- show the English meaning smaller
+- show the matching emoji/action
+- show a play audio button
+
+For Lesson 1, use these practice words:
+1. 선생님
+   - English: teacher
+   - Emoji/action: 👩‍🏫 or teacher icon
+
+2. 안녕하세요
+   - English: formal hello
+   - Emoji/action: 🙇 bow
+
+3. 안녕
+   - English: hello / goodbye
+   - Emoji/action: 👋 wave
+
+4. 안녕하세요 선생님
+   - English: hello teacher
+   - Emoji/action: 🙇 bow + 👩‍🏫 teacher
+
+Audio:
+- Use the same Dr. Coli voice/audio style already used throughout the app.
+- Each word should have a play button.
+- When tapped, play Dr. Coli saying that Korean word or phrase.
+- If existing Dr. Coli audio files already exist, reuse them.
+- If audio files do not exist yet, create clearly named placeholder references so I can add the files later.
+- Do not use robotic text-to-speech if Dr. Coli audio is available.
+
+Word cards:
+Below the main practice area, keep the “Today’s Words” section.
+- Make each word card tappable.
+- When the user taps a word card, update the main practice area with that word.
+- The selected word card should look active/selected.
+- Optionally auto-play the Dr. Coli audio when a word is selected.
+
+Practice buttons:
+Add simple buttons below the main practice card:
+- Listen
+- Say It
+- Mini Quiz
+
+For now:
+- Listen should play the Dr. Coli audio for the selected word.
+- Say It can be a placeholder for future speech practice.
+- Mini Quiz can be a placeholder for future review games.
+
+Future-friendly data logic:
+- Track which words the child gets wrong or skips.
+- In the future, prioritize weak words in the practice page.
+- Mix words from all unlocked/completed lessons.
+- But for now, Lesson 1 must always appear by default.
+
+UI:
+- Keep the page soft, kid-friendly, and consistent with the current Ottiya Korean design.
+- The practice card should feel playful and clear.
+- Use smooth transitions when switching between words.

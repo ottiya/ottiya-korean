@@ -1,0 +1,124 @@
+ "type": "songReady",
+        "board": "assets/ui/magic-board.png",
+        "playButtonText": "Play!"
+      }
+    },
+    {
+      "id": "s11-song-challenge",
+      "drColi": {
+        "animation": "idle",
+        "say": []
+      },
+      "bori": {
+        "animation": "idle"
+      },
+      "interaction": {
+        "type": "songChallenge",
+        "board": "assets/ui/magic-board.png",
+        "song": "assets/songs/song1_annyonghaseyo_35secver.mp3",
+        "choices": [
+          "🙇‍♀️",
+          "👋",
+          "🏃‍♀️"
+        ],
+        "firstTapOnly": true,
+        "cues": [
+          {
+            "word": "안녕",
+            "start": 0.0,
+            "end": 2.15,
+            "correctIndex": 1
+          },
+          {
+            "word": "안녕",
+            "start": 2.16,
+            "end": 6.03,
+            "correctIndex": 1
+          },
+          {
+            "word": "안녕하세요",
+            "start": 6.04,
+            "end": 10.1,
+            "correctIndex": 0
+          },
+          {
+            "word": "안녕",
+            "start": 10.11,
+            "end": 13.0,
+            "correctIndex": 1
+          },
+          {
+            "word": "안녕",
+            "start": 13.1,
+            "end": 16.5,
+            "correctIndex": 1
+          },
+          {
+            "word": "안녕하세요",
+            "start": 16.51,
+            "end": 20.04,
+            "correctIndex": 0
+          },
+          {
+            "word": "안녕",
+            "start": 20.05,
+            "end": 23.14,
+            "correctIndex": 1
+          },
+          {
+            "word": "안녕하세요",
+            "start": 27.0,
+            "end": 31.15,
+            "correctIndex": 0
+          },
+          {
+            "word": "안녕",
+            "start": 31.16,
+            "end": 34.12,
+            "correctIndex": 1
+          }
+        ],
+        "feedback": {
+          "praiseTexts": [
+            "Yay!",
+            "Great!",
+            "You got it!",
+            "Amazing, {name}!"
+          ],
+          "praiseSound": "assets/sound-effects/kids-yay.wav",
+          "oopsText": "🤭 Oops!",
+          "oopsSound": "assets/sound-effects/incorrect-sound-effect_oops.wav",
+          "lockedText": "✅ Locked in!",
+          "streakText": "✨ streak!",
+          "streakAt": 3
+        },
+        "endScreen": {
+          "tiers": [
+            {
+              "minAccuracy": 0.9,
+              "stars": 5,
+              "message": "{name}! You're a SUPER STAR!"
+            },
+            {
+              "minAccuracy": 0.7,
+              "stars": 4,
+              "message": "{name}! Excellent!"
+            },
+            {
+              "minAccuracy": 0.5,
+              "stars": 3,
+              "message": "{name}! Good job!"
+            },
+            {
+              "minAccuracy": 0.0,
+              "stars": 2,
+              "message": "Nice try, {name}!"
+            }
+          ],
+          "replayText": "Replay Song Challenge",
+          "continueText": "Continue"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Ottiya Korean"
+version = "1.0.0"
+id = "artifacts/ottiya-korean"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21986
+
+[services.development]
+run = "pnpm --filter @workspace/ottiya-korean run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/ottiya-korean", "run", "build" ]
+publicDir = "artifacts/ottiya-korean/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21986"
+BASE_PATH = "/"

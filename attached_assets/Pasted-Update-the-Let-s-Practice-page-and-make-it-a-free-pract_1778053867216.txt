@@ -1,0 +1,157 @@
+Update the “Let’s Practice” page and make it a free practice hub.
+
+This page should have two main functions:
+1. Free word practice
+2. Restricted lesson-based character practice
+
+Current issue:
+The large beige rectangle does not do anything yet. Please turn it into the main practice card.
+
+Main practice card / beige rectangle:
+- Use the beige rectangle as the active practice area.
+- When the page opens, automatically select the first available practice word.
+- Show the Korean word large.
+- Show the English meaning smaller.
+- Show the matching emoji/action.
+- Show a play audio button.
+- Use smooth animations when switching between words.
+- Do not show an empty beige rectangle.
+
+Practice content rules:
+- Lesson 1 should always be the default practice content.
+- If the user has not completed any lessons yet, show Lesson 1 words.
+- If the user has completed Lesson 1, continue showing Lesson 1 words.
+- Once the user completes Lesson 2, mix Lesson 1 + Lesson 2 words.
+- Once the user completes Lesson 3, mix Lessons 1–3 words.
+- Continue this pattern for future lessons.
+- Do not show an empty practice page.
+
+Lesson 1 practice words:
+1. 선생님
+   - English: teacher
+   - Emoji/action: 👩‍🏫
+
+2. 안녕하세요
+   - English: formal hello
+   - Emoji/action: 🙇
+
+3. 안녕
+   - English: hello / goodbye
+   - Emoji/action: 👋
+
+4. 안녕하세요 선생님
+   - English: hello teacher
+   - Emoji/action: 🙇 👩‍🏫
+
+Audio:
+- Use the same Dr. Coli voice/audio style already used throughout the app.
+- If the user is practicing with Bori, use Bori’s existing voice/audio.
+- Each word should have a play button.
+- When tapped, play the selected character saying that Korean word or phrase.
+- If existing audio files already exist, reuse them.
+- If audio files do not exist yet, create clearly named placeholder references so I can add the files later.
+- Do not use robotic text-to-speech if character audio is available.
+- Fix any delayed audio behavior so audio plays immediately or very shortly after tapping.
+
+Today’s Words section:
+- Keep the “Today’s Words” section below the main practice card.
+- Make each word card tappable.
+- When the user taps a word card, update the main practice card with that word.
+- The selected word card should look active/selected.
+- Optionally auto-play the character audio when a word is selected.
+
+Practice buttons:
+Add simple buttons below the main practice card:
+- Listen
+- Say It
+- Mini Quiz
+
+For now:
+- Listen should play the selected character’s audio for the selected word.
+- Say It can be a placeholder for future speech/pronunciation practice.
+- Mini Quiz can be a placeholder for future review games.
+
+Update “Speak with Dr. Coli”:
+Rename it to:
+“🎤 Talk with Dr. Coli”
+
+If the user selects Bori instead of Dr. Coli, the button should become:
+“🎤 Talk with Bori”
+
+Character practice mode:
+When the user taps “Talk with Dr. Coli” or “Talk with Bori,” open a simple guided speaking practice mode.
+
+This mode must be restricted and lesson-based:
+- Do NOT allow open-ended conversation.
+- Do NOT generate random Korean words.
+- Only use Korean words and phrases from Lesson 1 by default.
+- As the child unlocks future lessons, only add words from those unlocked/completed lessons.
+- The character should never say or quiz the child on Korean words they have not learned yet.
+
+Lesson 1 allowed Korean content:
+- 안녕
+- 안녕하세요
+- 선생님
+- 안녕하세요 선생님
+
+Opening line:
+Use the child’s name when available.
+
+For Dr. Coli:
+“안녕, [childName]! Let’s practice saying the Korean words we’re learning!”
+
+Then Dr. Coli can say:
+“Can you say 안녕하세요?”
+
+For Bori:
+“Woof woof! 안녕, [childName]! Let’s practice our Korean words!”
+
+Then Bori can say:
+“Can you say 안녕?”
+
+Tone:
+- This should feel like guided speaking practice, not a quiz.
+- It should feel warm, playful, safe, and simple for young kids.
+- Dr. Coli should feel like a kind teacher companion.
+- Bori should feel like a playful puppy friend.
+
+Bori behavior:
+- Use Bori’s existing voice/audio.
+- Bori can use cute puppy-style encouragement like:
+  “Woof woof! Great job!”
+  “Yay, [childName]!”
+  “Let’s say 안녕 together!”
+- Bori must follow the same lesson-only Korean content restrictions.
+
+Practice flow:
+1. Character says the warm intro using the child’s name.
+2. Character says one allowed Korean word or phrase from the lesson.
+3. Show the matching Korean word and emoji/action.
+4. Let the child tap:
+   - Hear it again
+   - I said it!
+   - Next word
+5. Give gentle encouragement:
+   - “잘했어요! ⭐”
+   - “Great job!”
+   - “Let’s try another one!”
+
+Existing script/audio issue:
+There seems to already be an audio/script in this section saying something like:
+“안녕 [childName], let’s focus on our words.”
+
+Please keep the idea of using the child’s name, but update the line to:
+“안녕, [childName]! Let’s practice saying the Korean words we’re learning!”
+
+Also fix the delay so this intro plays immediately or very shortly after the mode opens.
+
+Future-friendly logic:
+- Later, this mode can support speech recognition and real pronunciation practice.
+- Later, track which words the child gets wrong or skips.
+- Later, prioritize weak words in the practice page.
+- But for now, keep it scripted, restricted, and reliable.
+
+UI:
+- Keep the page soft, kid-friendly, and consistent with the current Ottiya Korean design.
+- Use large text, clear buttons, rounded cards, and smooth transitions.
+- Make the practice page feel like a warm learning space, not a test.

@@ -1,0 +1,913 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Ottiya Korean API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: Auth
+    description: Browser and mobile authentication endpoints.
+  - name: openai
+    description: OpenAI AI chat, image, and audio operations
+  - name: ottiya
+    description: Ottiya Korean learning operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /openai/conversations:
+    get:
+      operationId: listOpenaiConversations
+      tags: [openai]
+      summary: List all conversations
+      responses:
+        "200":
+          description: List of conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OpenaiConversation"
+    post:
+      operationId: createOpenaiConversation
+      tags: [openai]
+      summary: Create a new conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOpenaiConversationBody"
+      responses:
+        "201":
+          description: Created conversation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenaiConversation"
+  /openai/conversations/{id}:
+    get:
+      operationId: getOpenaiConversation
+      tags: [openai]
+      summary: Get conversation with messages
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Conversation with messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenaiConversationWithMessages"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenaiError"
+    delete:
+      operationId: deleteOpenaiConversation
+      tags: [openai]
+      summary: Delete a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenaiError"
+  /openai/conversations/{id}/messages:
+    get:
+      operationId: listOpenaiMessages
+      tags: [openai]
+      summary: List messages in a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OpenaiMessage"
+    post:
+      operationId: sendOpenaiMessage
+      tags: [openai]
+      summary: Send a text message and receive a streaming text response
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendOpenaiMessageBody"
+      responses:
+        "200":
+          description: SSE stream of assistant text chunks
+          content:
+            text/event-stream: {}
+  /openai/conversations/{id}/voice-messages:
+    post:
+      operationId: sendOpenaiVoiceMessage
+      tags: [openai]
+      summary: Send audio and receive a streaming voice response
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendOpenaiVoiceMessageBody"
+      responses:
+        "200":
+          description: SSE stream of transcript and audio chunks
+          content:
+            text/event-stream: {}
+
+  /tts:
+    post:
+      operationId: textToSpeech
+      tags: [ottiya]
+      summary: Convert text to speech (character voices)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TtsRequest"
+      responses:
+        "200":
+          description: Audio data as base64
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TtsResponse"
+
+  /stt:
+    post:
+      operationId: speechToText
+      tags: [ottiya]
+      summary: Convert child speech to text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SttRequest"
+      responses:
+        "200":
+          description: Transcription result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SttResponse"
+
+  /episodes:
+    get:
+      operationId: listEpisodes
+      tags: [ottiya]
+      summary: List all learning episodes
+      responses:
+        "200":
+          description: List of episodes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Episode"
+
+  /episodes/{id}:
+    get:
+      operationId: getEpisode
+      tags: [ottiya]
+      summary: Get a specific episode with scenes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Episode data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EpisodeDetail"
+        "404":
+          description: Not found
+
+  /children/{childId}/progress:
+    get:
+      operationId: getChildProgress
+      tags: [ottiya]
+      summary: Get a child's learning progress
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Progress data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChildProgress"
+    post:
+      operationId: saveChildProgress
+      tags: [ottiya]
+      summary: Save a child's progress for an episode/scene
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveProgressBody"
+      responses:
+        "200":
+          description: Saved progress
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProgressEntry"
+
+  /children/{childId}/logbook:
+    get:
+      operationId: getLogbook
+      tags: [ottiya]
+      summary: Get a child's vocabulary logbook
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Logbook entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogbookEntry"
+    post:
+      operationId: addLogbookEntry
+      tags: [ottiya]
+      summary: Add a word to the child's logbook
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddLogbookEntryBody"
+      responses:
+        "201":
+          description: Created logbook entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogbookEntry"
+
+  /children/{childId}/logbook/stats:
+    get:
+      operationId: getLogbookStats
+      tags: [ottiya]
+      summary: Get logbook statistics for a child
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Logbook statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogbookStats"
+
+  /children/{childId}/chat:
+    post:
+      operationId: chatWithCharacter
+      tags: [ottiya]
+      summary: Chat with Dr. Coli or Bori (AI-powered, adapted to child)
+      parameters:
+        - name: childId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatRequest"
+      responses:
+        "200":
+          description: Character's response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+
+  /auth/user:
+    get:
+      tags: [Auth]
+      operationId: getCurrentAuthUser
+      summary: Get the currently authenticated user
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationSessionHeader'
+        - $ref: '#/components/parameters/SessionCookie'
+      responses:
+        '200':
+          description: Auth status resolved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthUserEnvelope'
+  /login:
+    get:
+      tags: [Auth]
+      operationId: beginBrowserLogin
+      summary: Start the browser OIDC login flow
+      parameters:
+        - name: returnTo
+          in: query
+          required: false
+          description: Relative path to redirect to after login (must start with `/`). Defaults to `/`.
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirect to the OIDC authorization endpoint.
+  /callback:
+    get:
+      tags: [Auth]
+      operationId: handleBrowserLoginCallback
+      summary: Complete the browser OIDC login flow
+      parameters:
+        - name: code
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: iss
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uri
+      responses:
+        '302':
+          description: Redirect to the `returnTo` path on success (defaults to `/`) or `/api/login` on failure.
+  /logout:
+    get:
+      tags: [Auth]
+      operationId: logoutBrowserSession
+      summary: Clear the session and begin OIDC logout
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationSessionHeader'
+        - $ref: '#/components/parameters/SessionCookie'
+      responses:
+        '302':
+          description: Redirect to the OIDC provider logout URL.
+  /mobile-auth/token-exchange:
+    post:
+      tags: [Auth]
+      operationId: exchangeMobileAuthorizationCode
+      summary: Exchange a mobile OIDC code for a session token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MobileTokenExchangeRequest'
+      responses:
+        '200':
+          description: Session created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobileTokenExchangeSuccess'
+        '400':
+          description: Missing or invalid required fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Token did not contain usable claims.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Token exchange failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /mobile-auth/logout:
+    post:
+      tags: [Auth]
+      operationId: logoutMobileSession
+      summary: Delete a mobile session token
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationSessionHeader'
+      responses:
+        '200':
+          description: Logout processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutSuccess'
+
+components:
+  parameters:
+    AuthorizationSessionHeader:
+      name: Authorization
+      in: header
+      required: false
+      description: Opaque session token — `Bearer <sid>`.
+      schema:
+        type: string
+    SessionCookie:
+      name: sid
+      in: cookie
+      required: false
+      description: Browser session cookie.
+      schema:
+        type: string
+  schemas:
+    AuthUser:
+      type: object
+      required: [id, email, firstName, lastName, profileImageUrl]
+      properties:
+        id:
+          type: string
+        email:
+          type: [string, 'null']
+          format: email
+        firstName:
+          type: [string, 'null']
+        lastName:
+          type: [string, 'null']
+        profileImageUrl:
+          type: [string, 'null']
+    AuthUserEnvelope:
+      type: object
+      required: [user]
+      properties:
+        user:
+          oneOf:
+            - $ref: '#/components/schemas/AuthUser'
+            - type: 'null'
+    MobileTokenExchangeRequest:
+      type: object
+      required: [code, code_verifier, redirect_uri, state]
+      properties:
+        code:
+          type: string
+          minLength: 1
+        code_verifier:
+          type: string
+          minLength: 1
+        redirect_uri:
+          type: string
+          minLength: 1
+          format: uri
+        state:
+          type: string
+          minLength: 1
+        nonce:
+          type: string
+          minLength: 1
+    MobileTokenExchangeSuccess:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+    LogoutSuccess:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+          const: true
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    OpenaiConversation:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - createdAt
+    OpenaiMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+        conversationId:
+          type: integer
+        role:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - conversationId
+        - role
+        - content
+        - createdAt
+    CreateOpenaiConversationBody:
+      type: object
+      properties:
+        title:
+          type: string
+      required:
+        - title
+    SendOpenaiMessageBody:
+      type: object
+      properties:
+        content:
+          type: string
+      required:
+        - content
+    SendOpenaiVoiceMessageBody:
+      type: object
+      properties:
+        audio:
+          type: string
+          description: Base64-encoded audio data
+      required:
+        - audio
+    OpenaiConversationWithMessages:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/OpenaiMessage"
+      required:
+        - id
+        - title
+        - createdAt
+        - messages
+    GenerateOpenaiImageBody:
+      type: object
+      properties:
+        prompt:
+          type: string
+        size:
+          type: string
+          enum: ["1024x1024", "512x512", "256x256"]
+      required:
+        - prompt
+    GenerateOpenaiImageResponse:
+      type: object
+      properties:
+        b64_json:
+          type: string
+      required:
+        - b64_json
+    OpenaiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    TtsRequest:
+      type: object
+      properties:
+        text:
+          type: string
+        character:
+          type: string
+          enum: [drColi, bori, narrator]
+          description: Which character is speaking (determines voice)
+      required:
+        - text
+        - character
+    TtsResponse:
+      type: object
+      properties:
+        audio:
+          type: string
+          description: Base64-encoded MP3 audio
+      required:
+        - audio
+
+    SttRequest:
+      type: object
+      properties:
+        audio:
+          type: string
+          description: Base64-encoded audio from mic
+      required:
+        - audio
+    SttResponse:
+      type: object
+      properties:
+        transcript:
+          type: string
+        confidence:
+          type: number
+      required:
+        - transcript
+
+    Episode:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        sceneCount:
+          type: integer
+        vocabulary:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - title
+        - sceneCount
+        - vocabulary
+
+    EpisodeDetail:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        background:
+          type: string
+        scenes:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      required:
+        - id
+        - title
+        - background
+        - scenes
+
+    ChildProgress:
+      type: object
+      properties:
+        childId:
+          type: string
+        completedScenes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProgressEntry"
+        episodesStarted:
+          type: integer
+        episodesCompleted:
+          type: integer
+        totalStars:
+          type: integer
+      required:
+        - childId
+        - completedScenes
+        - episodesStarted
+        - episodesCompleted
+        - totalStars
+
+    ProgressEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        childId:
+          type: string
+        episodeId:
+          type: string
+        sceneId:
+          type: string
+        stars:
+          type: integer
+        completedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - childId
+        - episodeId
+        - sceneId
+        - stars
+        - completedAt
+
+    SaveProgressBody:
+      type: object
+      properties:
+        episodeId:
+          type: string
+        sceneId:
+          type: string
+        stars:
+          type: integer
+      required:
+        - episodeId
+        - sceneId
+        - stars
+
+    LogbookEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        childId:
+          type: string
+        korean:
+          type: string
+        english:
+          type: string
+        romanization:
+          type: string
+        imageUrl:
+          type: string
+        episodeId:
+          type: string
+        addedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - childId
+        - korean
+        - english
+        - romanization
+        - addedAt
+
+    AddLogbookEntryBody:
+      type: object
+      properties:
+        korean:
+          type: string
+        english:
+          type: string
+        romanization:
+          type: string
+        imageUrl:
+          type: string
+        episodeId:
+          type: string
+      required:
+        - korean
+        - english
+        - romanization
+
+    LogbookStats:
+      type: object
+      properties:
+        totalWords:
+          type: integer
+        wordsThisWeek:
+          type: integer
+        recentWords:
+          type: array
+          items:
+            $ref: "#/components/schemas/LogbookEntry"
+      required:
+        - totalWords
+        - wordsThisWeek
+        - recentWords
+
+    ChatRequest:
+      type: object
+      properties:
+        message:
+          type: string
+        character:
+          type: string
+          enum: [drColi, bori]
+        episodeId:
+          type: string
+        childName:
+          type: string
+        childAge:
+          type: integer
+        progressSummary:
+          type: string
+          description: Structured summary of the child's lesson progress for adaptive AI responses
+      required:
+        - message
+        - character
+
+    ChatResponse:
+      type: object
+      properties:
+        reply:
+          type: string
+        koreanWord:
+          type: string
+        englishWord:
+          type: string
+        romanization:
+          type: string
+      required:
+        - reply

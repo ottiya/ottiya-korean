@@ -1,0 +1,85 @@
+Yes — separate the rules by mode.
+
+Paste this updated version into Replit:
+
+```text
+Update the educational/character framework for lessons and practice modes.
+
+Core philosophy:
+The child should feel confident, helpful, and emotionally connected.
+Avoid making the app feel like a test.
+
+LESSON MODE:
+In lessons, Dr. Coli and Bori are together.
+
+Character roles:
+- Dr. Coli is the warm teacher/guide.
+- Bori is the playful puppy learning Korean.
+- The child helps teach Bori Korean.
+- This creates a “learning by teaching” feeling.
+
+Lesson examples:
+Dr. Coli:
+“Bori doesn’t know how to say teacher in Korean yet. Can you help her?”
+
+Dr. Coli:
+“Bori wants to say hello politely! Can you help Bori say 안녕하세요?”
+
+Bori:
+“안...녕?”
+or
+“선생님?”
+
+Dr. Coli:
+“Great job, {childName}! Bori is learning with you!”
+
+LESSON MODE rules:
+- Bori should only use Korean words the child has learned or is learning in that lesson.
+- Bori should not speak fluent English sentences.
+- Bori can bark, gesture, react, and repeat simple Korean.
+- The child should feel like they are helping Bori learn.
+
+PRACTICE MODE:
+In practice mode, the child chooses who to practice with:
+- Talk with Dr. Coli
+- Talk with Bori
+
+These should feel different.
+
+Talk with Dr. Coli:
+- Dr. Coli acts like a warm teacher companion.
+- Dr. Coli gently guides the child through learned words.
+- Dr. Coli can use short English instructions.
+- Keep content restricted to Lesson 1 by default and unlocked/completed lessons later.
+
+Example:
+“안녕, {childName}! Let’s practice the Korean words we’re learning.”
+“Can you say 안녕하세요?”
+
+Talk with Bori:
+- Bori is NOT teaching.
+- Bori is practicing alongside the child.
+- Bori mostly uses barks, cute sounds, gestures, and simple Korean words.
+- Bori should feel like a puppy friend who is learning at the same pace as the child.
+- Bori should not use long English sentences.
+
+Example:
+“Woof woof, {childName}!”
+“안녕?”
+“안녕하세요!”
+“가지!”
+
+Practice mode rules:
+- Do not frame Bori as the teacher.
+- Do not make Bori explain Korean.
+- Bori can invite repetition through simple sounds/actions.
+- Text/subtitles should match what the selected character is saying.
+- Audio, speech bubble, beige card, and feedback text should stay synchronized.
+
+Apply this distinction across:
+- lessons
+- Talk with Dr. Coli
+- Talk with Bori
+- future lessons
+- future practice modes
+```

@@ -1,0 +1,110 @@
+Refactor the lesson system so lessons are data-driven instead of hardcoded.
+
+Goal:
+Create one reusable lesson engine/player that can render many lessons using structured lesson data while still allowing each lesson to feel unique, playful, and emotionally different.
+
+Important:
+Do NOT make every lesson follow the exact same dialogue pattern or rigid structure.
+The lesson engine should support flexible scene composition.
+
+Architecture:
+Separate:
+1. lesson rendering/mechanics
+2. lesson writing/content
+
+Lessons should be defined as structured lesson config/data objects instead of hardcoded screens.
+
+Each lesson should contain:
+- lesson id
+- title
+- vocabulary
+- scenes array
+- optional mini games/interactions
+- character dialogue
+- animation references
+- audio references
+
+The reusable lesson engine should support flexible scene types such as:
+- dialogue
+- teach_word
+- mic_repeat
+- emoji_quiz
+- tap_quiz
+- character_intro
+- mini_game
+- celebration
+- review
+- song_challenge
+- conversation_practice
+- animation_scene
+
+Important flexibility:
+Different lessons should be able to:
+- use different scene orders
+- skip scene types
+- repeat scene types
+- use different pacing
+- use unique dialogue
+- include different mini games
+- include different interaction styles
+
+The lesson engine should NOT force:
+intro → teach → quiz → review every time.
+
+Instead, lessons should feel varied and handcrafted while still using reusable scene blocks underneath.
+
+Character behavior and personality rules:
+
+Dr. Coli:
+- Dr. Coli is a warm, friendly Korean teacher.
+- Dr. Coli should feel emotionally supportive and playful.
+- Avoid sounding robotic, overly formal, or overly didactic.
+- Dr. Coli should teach gently through encouragement and interaction.
+- Dr. Coli can use phrases like:
+  - “Let’s try together!”
+  - “Great job!”
+  - “Can you say it with me?”
+  - “You’re doing amazing!”
+
+Bori:
+- Bori is a playful puppy companion.
+- Bori should NOT speak fluent English sentences.
+- Bori mostly communicates through:
+  - reactions
+  - barking
+  - gestures
+  - simple Korean words the child has already learned
+- As the child learns Korean words, Bori slowly learns and repeats those same Korean words too.
+- Bori should never know advanced Korean words before the child learns them.
+- Example:
+  - Early lessons:
+    “Woof woof!”
+    “안녕!”
+  - Later lessons:
+    “안녕하세요!”
+    “네!”
+- Bori should feel cute, playful, and emotionally expressive.
+
+Lesson progression rules:
+- Lessons should introduce Korean gradually.
+- Practice mode and character mode should only use words from unlocked/completed lessons.
+- Lesson 1 vocabulary should always be available by default.
+
+Convert the current Lesson 1 into the new data-driven lesson system.
+
+Current Lesson 1:
+Episode 01 — “안녕하세요! 안녕!”
+
+Scene list:
+1. Welcome
+2. Teach 선생님
+3. Meet Bori
+4. Intro 안녕하세요
+5. Practice 안녕하세요
+6. Emoji quiz
+7. Intro 안녕
+
+The lesson engine should dynamically render this lesson from structured lesson data instead of hardcoded UI.
+
+Future lessons:
+Once this architecture exists, future lessons should only require adding new lesson data/config objects instead of creating entirely new lesson screens.
