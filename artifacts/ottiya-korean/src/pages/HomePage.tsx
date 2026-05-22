@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { useListEpisodes, useGetChildProgress } from "@workspace/api-client-react";
+import { useListEpisodes, useGetChildProgress, useTextToSpeech } from "@workspace/api-client-react";
 import { DrColiSprite } from "@/components/DrColiSprite";
 import { BoriSprite } from "@/components/BoriSprite";
 import { InstallBanner } from "@/components/InstallBanner";
@@ -49,21 +49,16 @@ export default function HomePage() {
   const displayName = profile?.name;
   const todaysWord = getDailyWord();
   const buddyImg = CHAR_IMAGES[profile?.favorite ?? "rabbit"] ?? rabbitImg;
+  const { mutateAsync: tts } = useTextToSpeech();
 
   const speakTodaysWord = async () => {
-    const response = await fetch("/api/tts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ text: todaysWord.korean, character: "drColi" }),
-    });
-
-    if (!response.ok) return;
-
-    const { audio } = await response.json() as { audio: string };
-    const sound = new Audio(`data:audio/mp3;base64,${audio}`);
-    sound.play().catch(() => {});
+    try {
+      const { audio } = await tts({ data: { text: todaysWord.korean, character: "drColi" } });
+      const sound = new Audio(`data:audio/mp3;base64,${audio}`);
+      sound.play().catch(() => {});
+    } catch {
+      // Non-critical
+    }
   };
 
   return (

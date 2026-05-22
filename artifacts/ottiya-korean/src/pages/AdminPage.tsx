@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { customFetch } from "@workspace/api-client-react";
 import { getLessonByEpisodeId } from "@/data/lessons";
 import { ADMIN_SESSION_KEY } from "@/App";
 
@@ -186,14 +187,10 @@ export default function AdminPage({ onLogout }: Props) {
       dateStyle: "medium",
       timeStyle: "short",
     }) + " PT");
-    fetch("/api/admin/analytics", { headers: getAdminHeaders() })
-      .then(r => {
-        if (r.status === 403) return Promise.reject("forbidden");
-        return r.ok ? r.json() as Promise<Analytics> : Promise.reject(r.status);
-      })
+    customFetch<Analytics>("/api/admin/analytics", { headers: getAdminHeaders(), responseType: "json" })
       .then(setData)
-      .catch(e => {
-        if (e === "forbidden") {
+      .catch((e: { status?: number }) => {
+        if (e?.status === 403) {
           setError("Session expired — please log in again.");
           onLogout();
         } else {

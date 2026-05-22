@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import { customFetch } from "@workspace/api-client-react";
 import type { FavoriteChar, ChildProfile } from "@/hooks/useChildProfile";
 
 export interface StoredProfile {
@@ -64,7 +65,7 @@ function getAuthHeaders(): Record<string, string> {
 
 // Fire-and-forget: sync a profile to the server so analytics can use birth year
 function syncProfileToServer(profile: StoredProfile) {
-  fetch(`/api/children/${profile.id}/profile`, {
+  customFetch(`/api/children/${profile.id}/profile`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     credentials: "include",

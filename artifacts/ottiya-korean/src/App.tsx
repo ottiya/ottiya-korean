@@ -59,8 +59,7 @@ function AdminSection() {
       setStatus("unauthenticated");
       return;
     }
-    fetch("/api/admin/me", { headers: { Authorization: `Bearer ${sid}` } })
-      .then(r => r.ok ? r.json() as Promise<{ admin: boolean }> : Promise.reject())
+    customFetch<{ admin: boolean }>("/api/admin/me", { headers: { Authorization: `Bearer ${sid}` }, responseType: "json" })
       .then(d => setStatus(d.admin ? "authenticated" : "unauthenticated"))
       .catch(() => setStatus("unauthenticated"));
   }, []);
@@ -73,7 +72,7 @@ function AdminSection() {
   const handleLogout = () => {
     const sid = sessionStorage.getItem(ADMIN_SESSION_KEY);
     if (sid) {
-      fetch("/api/admin/logout", {
+      customFetch("/api/admin/logout", {
         method: "POST",
         headers: { Authorization: `Bearer ${sid}` },
       }).catch(() => {});
@@ -211,8 +210,7 @@ function LoginGate({ children }: { children: React.ReactNode }) {
     const sid = sessionStorage.getItem(SESSION_KEY);
     const headers: Record<string, string> = {};
     if (sid) headers["Authorization"] = `Bearer ${sid}`;
-    fetch("/api/auth/user", { credentials: "include", headers })
-      .then(res => res.ok ? res.json() as Promise<{ user: { id: string } | null }> : Promise.reject())
+    customFetch<{ user: { id: string } | null }>("/api/auth/user", { credentials: "include", headers, responseType: "json" })
       .then(data => setStatus(data.user ? "authenticated" : "unauthenticated"))
       .catch(() => setStatus("unauthenticated"));
   }, []);

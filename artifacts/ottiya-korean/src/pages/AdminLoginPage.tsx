@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { customFetch } from "@workspace/api-client-react";
 
 interface Props {
   onAuthenticated: (sessionId: string) => void;
@@ -15,18 +16,13 @@ export default function AdminLoginPage({ onAuthenticated }: Props) {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/admin/login", {
+      const data = await customFetch<{ ok: boolean; sessionId: string }>("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
+        responseType: "json",
       });
-      if (res.ok) {
-        const data = await res.json() as { ok: boolean; sessionId: string };
-        onAuthenticated(data.sessionId);
-      } else {
-        const data = await res.json() as { error?: string };
-        setError(data.error ?? "Incorrect password");
-      }
+      onAuthenticated(data.sessionId);
     } catch {
       setError("Connection error — please try again.");
     } finally {
