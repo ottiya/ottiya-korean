@@ -1,3 +1,6 @@
+// Architecture: frontend is hosted on Vercel, API server on Railway.
+// All API calls MUST use customFetch or the generated API client hooks — never raw
+// fetch with relative /api/ URLs, which would target the wrong host in production.
 import { useState, useCallback, useEffect } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
