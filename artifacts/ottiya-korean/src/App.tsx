@@ -7,7 +7,7 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { SetupOverlay } from "@/components/SetupOverlay";
 import { FeedbackButton } from "@/components/FeedbackButton";
 import { ProfilesProvider, useProfilesContext } from "@/contexts/ProfilesContext";
-import { setAuthTokenGetter } from "@workspace/api-client-react";
+import { setAuthTokenGetter, customFetch } from "@workspace/api-client-react";
 import AdminLoginPage from "@/pages/AdminLoginPage";
 import AdminPage from "@/pages/AdminPage";
 
@@ -250,24 +250,20 @@ function PasswordGate({ onAuthenticated }: { onAuthenticated: () => void }) {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/password-login", {
+      const data = await customFetch<{ ok: boolean; sessionId?: string }>("/api/password-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ password }),
+        responseType: "json",
       });
-      if (res.ok) {
-        const data = await res.json() as { ok: boolean; sessionId?: string };
-        if (data.sessionId) {
-          sessionStorage.setItem(SESSION_KEY, data.sessionId);
-        }
-        onAuthenticated();
-      } else {
-        const data = await res.json() as { error?: string };
-        setError(data.error ?? "Incorrect password — try again!");
+      if (data.sessionId) {
+        sessionStorage.setItem(SESSION_KEY, data.sessionId);
       }
-    } catch {
-      setError("Something went wrong — please try again.");
+      onAuthenticated();
+    } catch (err) {
+      const message = (err as { data?: { error?: string } })?.data?.error;
+      setError(message ?? "Something went wrong — please try again.");
     } finally {
       setLoading(false);
     }
