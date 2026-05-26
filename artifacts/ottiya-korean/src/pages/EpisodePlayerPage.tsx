@@ -5,7 +5,8 @@ import {
   useTextToSpeech,
   useSpeechToText,
   useAddLogbookEntry,
-  useSaveChildProgress
+  useSaveChildProgress,
+  customFetch,
 } from "@workspace/api-client-react";
 import { useVoiceRecorder } from "@workspace/integrations-openai-ai-react";
 import { useChildId } from "@/hooks/useChildId";
@@ -132,6 +133,24 @@ export default function EpisodePlayerPage() {
 
   const { state: voiceState, startRecording, stopRecording } = useVoiceRecorder();
   const { markToday } = useStreakTracker();
+
+  const postWordAttempt = (korean: string, correct: boolean) => {
+    customFetch(`/api/children/${childId}/word-attempts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ korean, correct }),
+    }).catch(() => {});
+  };
+
+  const postEpisodeCompletion = () => {
+    customFetch(`/api/children/${childId}/episode-completions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ episodeId: id }),
+    }).catch(() => {});
+  };
 
   const stopDrColiRef = useRef<(() => void) | null>(null);
   const prefetchKeyRef = useRef<string>("");
@@ -433,6 +452,7 @@ export default function EpisodePlayerPage() {
       const stars = Math.max(1, Math.round((firstTryCorrectRef.current / totalInteractive) * 5));
       setEpisodeStars(stars);
       saveProgress({ childId, data: { episodeId: id!, sceneId: currentScene?.id || "", stars } });
+      postEpisodeCompletion();
       setIsCompleted(true);
     }
   };
@@ -440,9 +460,14 @@ export default function EpisodePlayerPage() {
   const handleEmojiChoice = (index: number) => {
     const isCorrect = index === currentScene?.interaction?.correctIndex;
     setInteractionResult(isCorrect ? "correct" : "wrong");
+    const emojiWord: string =
+      (currentScene?.taughtWord as any)?.korean ??
+      currentScene?.interaction?.choices?.[currentScene?.interaction?.correctIndex] ??
+      "";
 
     if (isCorrect) {
       if (!failedSceneIdsRef.current.has(currentScene.id)) firstTryCorrectRef.current += 1;
+      if (emojiWord) postWordAttempt(emojiWord, true);
       const text = interpolateName(currentScene?.interaction?.onCorrectSay?.[0] || "Great job!", childName);
       if (currentScene?.taughtWord) {
         addLogbook({ childId, data: { ...currentScene.taughtWord, episodeId: id } });
@@ -450,6 +475,7 @@ export default function EpisodePlayerPage() {
       celebrateCorrectAnswer();
       playResponse(text); // uses prefetch if available
     } else {
+      if (emojiWord) postWordAttempt(emojiWord, false);
       failedSceneIdsRef.current.add(currentScene.id);
       const text = interpolateName(currentScene?.interaction?.onWrongSay?.[0] || "Try again!", childName);
       // Set afterSpeakRef BEFORE speaking so it fires when audio ends
@@ -503,6 +529,7 @@ export default function EpisodePlayerPage() {
               const transcript = res.transcript?.trim() ?? "";
               const targetWord = currentScene?.interaction?.targetWord as string | undefined;
               const targets = (currentScene?.interaction?.targets as string[] | undefined) ?? [];
+              const micWord: string = (currentScene?.taughtWord as any)?.korean ?? targetWord ?? "";
               const matched =
                 transcript.length > 0 &&
                 (
@@ -513,6 +540,7 @@ export default function EpisodePlayerPage() {
               if (matched) {
                 setInteractionResult("correct");
                 if (!failedSceneIdsRef.current.has(currentScene.id)) firstTryCorrectRef.current += 1;
+                if (micWord) postWordAttempt(micWord, true);
                 if (currentScene?.taughtWord) {
                   addLogbook({ childId, data: { ...currentScene.taughtWord, episodeId: id } });
                 }
@@ -527,6 +555,7 @@ export default function EpisodePlayerPage() {
                 playResponse(correctText);
               } else {
                 wrongAttemptsRef.current += 1;
+                if (micWord) postWordAttempt(micWord, false);
                 failedSceneIdsRef.current.add(currentScene.id);
                 setInteractionResult("wrong");
                 setIsProcessing(false);
@@ -552,6 +581,9 @@ export default function EpisodePlayerPage() {
               }
             },
             onError: () => {
+              const micWord: string = (currentScene?.taughtWord as any)?.korean ??
+                (currentScene?.interaction?.targetWord as string | undefined) ?? "";
+              if (micWord) postWordAttempt(micWord, false);
               wrongAttemptsRef.current += 1;
               setInteractionResult("wrong");
               setIsProcessing(false);
