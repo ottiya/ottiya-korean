@@ -121,9 +121,21 @@ router.post("/children/:childId/chat", chatRateLimiter, async (req, res) => {
   }
 
   const systemPrompt = character === "bori" ? BORI_PERSONA : DR_COLI_PERSONA;
-  const progressContext = progressSummary
-    ? `\n\nCHILD PROGRESS (personalise your response using this):\n${progressSummary}`
+  const progressLines = [
+    childName ? `Child's name: ${childName}.` : "",
+    progressSummary ?? "",
+  ].filter(Boolean).join("\n");
+  const progressContext = progressLines
+    ? `\n\nCHILD PROGRESS (personalise your response using this):\n${progressLines}`
     : "";
+
+  if (message === "[SESSION_START]") {
+    req.log.info({
+      childName: name,
+      progressSummary: progressSummary ?? "(none)",
+      fullSystemPrompt: `${systemPrompt}${progressContext}`.trim(),
+    }, "chat: SESSION_START");
+  }
 
   try {
     const response = await openai.chat.completions.create({

@@ -223,7 +223,11 @@ export default function EpisodePlayerPage() {
         ? adaptiveOpeningLine
         : interpolateName(rawDialogueLine, childName))
     : undefined;
-  const isOnLastDialogue = currentDialogueIndex === (currentScene?.drColi?.say?.length ?? 1) - 1;
+  // When an adaptive opening replaces scene 0, treat it as a single-line scene so
+  // the remaining standard lines ("And this is Bori…") don't play after it.
+  const isOnLastDialogue = (currentSceneIndex === 0 && adaptiveOpeningLine !== null)
+    ? currentDialogueIndex === 0
+    : currentDialogueIndex === (currentScene?.drColi?.say?.length ?? 1) - 1;
 
   // What shows in the bubble: response text takes priority over scene dialogue
   const displayedText = responseText ?? currentDialogue;
