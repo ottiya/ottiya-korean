@@ -12,7 +12,7 @@ import { useVoiceRecorder } from "@workspace/integrations-openai-ai-react";
 import { useChildId } from "@/hooks/useChildId";
 import { useChildProfile } from "@/hooks/useChildProfile";
 import { useStreakTracker } from "@/hooks/useStreakTracker";
-import { getLessonByEpisodeId } from "@/data/lessons";
+
 import { DrColiSprite } from "@/components/DrColiSprite";
 import { BoriSprite } from "@/components/BoriSprite";
 import { ConfettiOverlay } from "@/components/ConfettiOverlay";
@@ -86,43 +86,6 @@ function prepareForTts(text: string): string {
     .trim();
 }
 
-type WordStat = { korean: string; correct: number; incorrect: number; total: number };
-type EpisodeCompletion = { episodeId: string; completedAt: string };
-
-// Build a plain-English context string for the Dr. Coli GPT system prompt.
-// Returns null when there is genuinely no history yet (first-ever visit).
-function buildEpisodeProgressSummary(
-  episodeId: string,
-  wordHistory: WordStat[],
-  episodeHistory: EpisodeCompletion[],
-  episodeWords: string[],
-): string | null {
-  const completions = episodeHistory.filter(e => e.episodeId === episodeId);
-  const wordStats = wordHistory.filter(w => episodeWords.includes(w.korean));
-  if (completions.length === 0 && wordStats.length === 0) return null;
-
-  const parts: string[] = [];
-
-  if (completions.length > 0) {
-    const daysAgo = Math.floor(
-      (Date.now() - new Date(completions[0].completedAt).getTime()) / 86_400_000,
-    );
-    const when = daysAgo === 0 ? "today" : daysAgo === 1 ? "yesterday" : `${daysAgo} days ago`;
-    parts.push(`Child has completed this episode ${completions.length} time(s). Last visit: ${when}.`);
-  } else {
-    parts.push("Child has not yet completed this episode.");
-  }
-
-  if (wordStats.length > 0) {
-    const mastered  = wordStats.filter(w => w.total >= 2 && w.correct / w.total >= 0.8);
-    const struggling = wordStats.filter(w => w.total >= 2 && w.correct / w.total < 0.5);
-    if (mastered.length)   parts.push(`Words the child knows well: ${mastered.map(w => w.korean).join(", ")}.`);
-    if (struggling.length) parts.push(`Words still being learned: ${struggling.map(w => w.korean).join(", ")}.`);
-  }
-
-  return parts.join(" ");
-}
-
 // Replace spaces between Korean characters with non-breaking spaces so Korean
 // phrases (e.g. 이게 뭐예요?) always render on a single line.
 function formatDisplayText(text: string): string {
@@ -153,14 +116,11 @@ export default function EpisodePlayerPage() {
   const [celebrate, setCelebrate] = useState(false);
   const [waveCheckActive, setWaveCheckActive] = useState(false);
   const [completionMsg, setCompletionMsg] = useState("");
-  const [adaptiveOpeningLine, setAdaptiveOpeningLine] = useState<string | null>(null);
-  const [isStarting, setIsStarting] = useState(false);
   // Track first-try accuracy via refs so advanceScene always reads the current value
   const firstTryCorrectRef = useRef(0);
   const failedSceneIdsRef = useRef(new Set<string>());
   // Wrong attempt counter — resets each scene. After 2 failures Dr. Coli gently explains and moves on.
   const wrongAttemptsRef = useRef(0);
-  const historyRef = useRef<{ wordHistory: WordStat[]; episodeHistory: EpisodeCompletion[] } | null>(null);
 
   // Bori's spoken line — set while she's speaking, cleared when audio ends
   const [boriLine, setBoriLine] = useState<string | null>(null);
@@ -174,16 +134,6 @@ export default function EpisodePlayerPage() {
 
   const { state: voiceState, startRecording, stopRecording } = useVoiceRecorder();
   const { markToday } = useStreakTracker();
-
-  // Fetch history once on mount so it's ready before the user clicks Start Lesson.
-  useEffect(() => {
-    customFetch<{ wordHistory: WordStat[]; episodeHistory: EpisodeCompletion[] }>(
-      `/api/children/${childId}/history`,
-      { credentials: "include" },
-    )
-      .then(data => { historyRef.current = data; })
-      .catch(() => {});
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const postWordAttempt = (korean: string, correct: boolean) => {
     customFetch(`/api/children/${childId}/word-attempts`, {
@@ -218,16 +168,8 @@ export default function EpisodePlayerPage() {
 
   const currentScene = episode?.scenes?.[currentSceneIndex] as any;
   const rawDialogueLine = currentScene?.drColi?.say?.[currentDialogueIndex] as string | undefined;
-  const currentDialogue = rawDialogueLine
-    ? (currentSceneIndex === 0 && currentDialogueIndex === 0 && adaptiveOpeningLine
-        ? adaptiveOpeningLine
-        : interpolateName(rawDialogueLine, childName))
-    : undefined;
-  // When an adaptive opening replaces scene 0, treat it as a single-line scene so
-  // the remaining standard lines ("And this is Bori…") don't play after it.
-  const isOnLastDialogue = (currentSceneIndex === 0 && adaptiveOpeningLine !== null)
-    ? currentDialogueIndex === 0
-    : currentDialogueIndex === (currentScene?.drColi?.say?.length ?? 1) - 1;
+  const currentDialogue = rawDialogueLine ? interpolateName(rawDialogueLine, childName) : undefined;
+  const isOnLastDialogue = currentDialogueIndex === (currentScene?.drColi?.say?.length ?? 1) - 1;
 
   // What shows in the bubble: response text takes priority over scene dialogue
   const displayedText = responseText ?? currentDialogue;
@@ -731,57 +673,10 @@ export default function EpisodePlayerPage() {
               ))}
             </div>
             <button
-              disabled={isStarting}
-              onClick={async () => {
-                unlockAudioCtx();
-                const lesson = getLessonByEpisodeId(id ?? "");
-                const history = historyRef.current;
-                if (lesson && history) {
-                  const episodeWords = lesson.vocabulary.map(v => v.korean);
-                  const summary = buildEpisodeProgressSummary(
-                    id ?? "", history.wordHistory, history.episodeHistory, episodeWords,
-                  );
-                  if (summary) {
-                    setIsStarting(true);
-                    try {
-                      const chatRes = await customFetch<{ reply: string }>(
-                        `/api/children/${childId}/chat`,
-                        {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          credentials: "include",
-                          body: JSON.stringify({
-                            message: "[SESSION_START]",
-                            character: "drColi",
-                            childName,
-                            progressSummary: summary,
-                          }),
-                        },
-                      );
-                      const adaptiveLine = interpolateName(chatRes.reply, childName);
-                      // Pre-warm TTS so playDialogue gets an instant cache hit on lesson start
-                      await new Promise<void>(resolve => {
-                        tts(
-                          { data: { text: prepareForTts(adaptiveLine), character: DR_COLI_CHARACTER } },
-                          {
-                            onSuccess: res => { ttsCache.set(`${adaptiveLine}::drColi`, res.audio); resolve(); },
-                            onError: () => resolve(),
-                          },
-                        );
-                      });
-                      setAdaptiveOpeningLine(adaptiveLine);
-                    } catch {
-                      // chat or network failed — fall through to standard script
-                    } finally {
-                      setIsStarting(false);
-                    }
-                  }
-                }
-                setLessonStarted(true);
-              }}
-              className="mt-5 w-full bg-primary text-primary-foreground font-black text-lg px-8 py-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-60"
+              onClick={() => { unlockAudioCtx(); setLessonStarted(true); }}
+              className="mt-5 w-full bg-primary text-primary-foreground font-black text-lg px-8 py-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all"
             >
-              {isStarting ? "Getting ready..." : "Start Lesson"}
+              Start Lesson
             </button>
           </div>
         </div>
