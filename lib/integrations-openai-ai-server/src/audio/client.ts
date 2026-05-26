@@ -80,12 +80,20 @@ export async function convertToWav(audioBuffer: Buffer): Promise<Buffer> {
         outputPath,
       ]);
 
-      ffmpeg.stderr.on("data", () => {});
+      const stderrChunks: Buffer[] = [];
+      ffmpeg.stderr.on("data", (chunk: Buffer) => stderrChunks.push(chunk));
       ffmpeg.on("close", (code) => {
-        if (code === 0) resolve();
-        else reject(new Error(`ffmpeg exited with code ${code}`));
+        if (code === 0) {
+          resolve();
+        } else {
+          const stderrText = Buffer.concat(stderrChunks).toString("utf8").trim();
+          reject(new Error(`ffmpeg exited with code ${code}: ${stderrText}`));
+        }
       });
-      ffmpeg.on("error", reject);
+      ffmpeg.on("error", (err) => {
+        const stderrText = Buffer.concat(stderrChunks).toString("utf8").trim();
+        reject(new Error(`ffmpeg spawn error: ${err.message}${stderrText ? ` | stderr: ${stderrText}` : ""}`));
+      });
     });
 
     return await readFile(outputPath);
@@ -104,7 +112,9 @@ export async function ensureCompatibleFormat(
   const detected = detectAudioFormat(audioBuffer);
   if (detected === "wav") return { buffer: audioBuffer, format: "wav" };
   if (detected === "mp3") return { buffer: audioBuffer, format: "mp3" };
+  console.log(`[STT] converting ${detected} (${audioBuffer.length} bytes) to WAV via ffmpeg`);
   const wavBuffer = await convertToWav(audioBuffer);
+  console.log(`[STT] ffmpeg conversion complete — output ${wavBuffer.length} bytes`);
   return { buffer: wavBuffer, format: "wav" };
 }
 
