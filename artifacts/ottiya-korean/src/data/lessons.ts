@@ -68,13 +68,18 @@ export const LESSON_1: LessonDefinition = {
       type: "character_intro",
       drColi: {
         animation: "talk",
-        say: [
-          "안녕! Hello, {name}! I'm Dr. Coli — your 선생님, your teacher!",
-          "And this is Bori, my puppy friend!",
-          "Bori is learning Korean just like you. Can you help teach her?",
-        ],
+        say: ["안녕! Hello, {name}!", "I'm Dr. Coli!"],
       },
       bori: { animation: "wave", say: "Woof woof!" },
+      interaction: { type: "none" },
+    },
+    {
+      id: "s0b-intro",
+      type: "character_intro",
+      drColi: {
+        animation: "talk",
+        say: ["And this is Bori!", "Bori is learning Korean too.", "Can you help teach her?"],
+      },
       interaction: { type: "none" },
     },
     {
@@ -82,21 +87,18 @@ export const LESSON_1: LessonDefinition = {
       type: "teach_word",
       drColi: {
         animation: "talk",
-        say: [
-          "Bori doesn't know how to say teacher in Korean yet!",
-          "The word is 선생님.",
-          "Can you help teach Bori? Say it out loud — 선생님!",
-        ],
+        say: ["Bori is trying to say 선생님!", "Can you help her, {name}?", "Say 선생님!"],
       },
       bori: { animation: "look", say: "선...생?" },
       taughtWord: { korean: "선생님", english: "teacher", romanization: "seon-saeng-nim", emoji: "👩‍🏫" },
       interaction: {
         type: "mic",
-        prompt: "Say 선생님 to help Bori learn!",
+        prompt: "Say 선생님 to help Bori!",
         targetWord: "선생님",
         hint: "seon-saeng-nim",
-        onCorrectSay: ["선생님! Great job, {name}! Bori is learning because of you!"],
-        onWrongSay: ["Almost! Let's try again — 선생님!"],
+        boriOnCorrect: "선생님! Woof!",
+        onCorrectSay: ["You taught Bori!", "Thank you, {name}!"],
+        onWrongSay: ["Almost!", "Let's help Bori again.", "선생님!"],
       },
     },
     {
@@ -104,13 +106,19 @@ export const LESSON_1: LessonDefinition = {
       type: "character_intro",
       drColi: {
         animation: "talk",
-        say: [
-          "Bori learned 선생님 because of you!",
-          "You're such a great teacher!",
-          "Let's keep going — Bori wants to learn more!",
-        ],
+        say: ["Wow!", "Bori learned a new word!"],
       },
-      bori: { animation: "wave", say: "선생님! Woof!" },
+      bori: { animation: "wave", say: "선생님!" },
+      interaction: { type: "none" },
+    },
+    {
+      id: "s2b-keep-going",
+      type: "character_intro",
+      drColi: {
+        animation: "talk",
+        say: ["You're such a great teacher, {name}.", "Let's keep going!"],
+      },
+      bori: { animation: "jump", say: "I want to learn more!" },
       interaction: { type: "none" },
     },
     {
@@ -118,31 +126,34 @@ export const LESSON_1: LessonDefinition = {
       type: "dialogue",
       drColi: {
         animation: "talk",
-        say: [
-          "Bori wants to say hello politely to grown-ups!",
-          "Can you help Bori say 안녕하세요?",
-          "We bow a little when we say it — like this!",
-        ],
+        say: ["That's how we say hi to friends.", "But Bori wants to say hello politely!"],
       },
-      bori: { animation: "bow", say: "안...녕?" },
+      bori: { animation: "look", say: "안...녕?" },
+      interaction: { type: "none" },
+    },
+    {
+      id: "s3b-annyonghaseyo-prompt",
+      type: "dialogue",
+      drColi: {
+        animation: "talk",
+        say: ["Can you teach Bori?", "Say 안녕하세요!", "And bow a little too!"],
+      },
+      bori: { animation: "look", say: "안녕하세요...?" },
       interaction: { type: "none" },
     },
     {
       id: "s4-repeat-annyonghaseyo",
       type: "mic_repeat",
-      drColi: {
-        animation: "bow",
-        say: ["Show Bori how! Say 안녕하세요!", "Give a little bow too!"],
-      },
-      bori: { animation: "bow", say: "안녕하세요!" },
+      bori: { animation: "bow" },
       taughtWord: { korean: "안녕하세요", english: "hello (formal)", romanization: "an-nyeong-ha-se-yo", emoji: "🙇" },
       interaction: {
         type: "mic",
         prompt: "Say 안녕하세요 to help Bori!",
         targetWord: "안녕하세요",
-        hint: "an-nyong-ha-se-yo",
-        onCorrectSay: ["안녕하세요! You're amazing, {name}! Bori is so happy you helped her!"],
-        onWrongSay: ["Great try! One more time — 안녕하세요!"],
+        hint: "an-nyeong-ha-se-yo",
+        boriOnCorrect: "안녕하세요!",
+        onCorrectSay: ["You did it, {name}!", "Thank you!", "Bori sounds so polite now!"],
+        onWrongSay: ["Good try!", "Let's help Bori again.", "안녕하세요!"],
       },
     },
     {
@@ -150,15 +161,15 @@ export const LESSON_1: LessonDefinition = {
       type: "emoji_quiz",
       drColi: {
         animation: "talk",
-        say: ["Bori is confused! Help her out.", "When we say 안녕하세요, what do we do?"],
+        say: ["When we say 안녕하세요...", "What do we do?"],
       },
       bori: { animation: "look", say: "안녕하세요?" },
       interaction: {
         type: "emoji",
         choices: ["🙇‍♀️", "👋", "🏃‍♀️"],
         correctIndex: 0,
-        onCorrectSay: ["Yes! We bow! Now Bori knows too — because of you!"],
-        onWrongSay: ["Hmm, not quite! What do we do when we say 안녕하세요?"],
+        onCorrectSay: ["Yes! We bow!", "Bow!", "Now Bori remembers too!"],
+        onWrongSay: ["Almost!", "What do we do when we say 안녕하세요?"],
       },
     },
     {
@@ -166,11 +177,7 @@ export const LESSON_1: LessonDefinition = {
       type: "dialogue",
       drColi: {
         animation: "talk",
-        say: [
-          "One more word for Bori to learn!",
-          "When you see your friends, you say 안녕! And wave!",
-          "Can you show Bori how?",
-        ],
+        say: ["That's right!", "We say 안녕 to friends!", "Can you wave and say 안녕 too?"],
       },
       bori: { animation: "wave", say: "안녕!" },
       interaction: { type: "none" },
