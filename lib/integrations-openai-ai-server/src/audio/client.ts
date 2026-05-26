@@ -225,6 +225,7 @@ export async function speechToText(
   const response = await openai.audio.transcriptions.create({
     file,
     model: "gpt-4o-mini-transcribe",
+    language: "ko",
   });
   return response.text;
 }
