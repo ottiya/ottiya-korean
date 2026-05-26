@@ -8,9 +8,12 @@ const router = Router();
 // ─── Approved Korean vocabulary (exact matches only) ──────────────────────────
 const APPROVED_KOREAN_WORDS = new Set(["선생님", "안녕하세요", "안녕"]);
 
-function hasUnauthorizedKorean(text: string): boolean {
+function hasUnauthorizedKorean(text: string, extraAllowed: string[] = []): boolean {
   const words = text.match(/[가-힣]+/g) ?? [];
-  return words.some((w) => !APPROVED_KOREAN_WORDS.has(w));
+  const allowed = extraAllowed.length > 0
+    ? new Set([...APPROVED_KOREAN_WORDS, ...extraAllowed])
+    : APPROVED_KOREAN_WORDS;
+  return words.some((w) => !allowed.has(w));
 }
 
 function safeFallback(character: string, name: string): string {
@@ -159,7 +162,9 @@ router.post("/children/:childId/chat", chatRateLimiter, async (req, res) => {
       safeFallback(character ?? "drColi", name);
 
     // ── Server-side Korean vocabulary gate ───────────────────────────────────
-    if (hasUnauthorizedKorean(reply)) {
+    // Allow the child's Korean name (split on spaces in case of multi-part names)
+    const nameKoreanParts = (childName ?? "").split(/\s+/).filter(p => /[가-힣]/.test(p));
+    if (hasUnauthorizedKorean(reply, nameKoreanParts)) {
       req.log.warn({ reply }, "Response contained unauthorized Korean — replaced with safe fallback");
       reply = safeFallback(character ?? "drColi", name);
     }
