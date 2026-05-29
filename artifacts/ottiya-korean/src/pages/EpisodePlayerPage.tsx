@@ -116,6 +116,8 @@ export default function EpisodePlayerPage() {
   const [celebrate, setCelebrate] = useState(false);
   const [waveCheckActive, setWaveCheckActive] = useState(false);
   const [completionMsg, setCompletionMsg] = useState("");
+  const [isSayBeforePlaying, setIsSayBeforePlaying] = useState(false);
+  const sayBeforeSceneRef = useRef(-1);
   // Track first-try accuracy via refs so advanceScene always reads the current value
   const firstTryCorrectRef = useRef(0);
   const failedSceneIdsRef = useRef(new Set<string>());
@@ -171,8 +173,8 @@ export default function EpisodePlayerPage() {
   const currentDialogue = rawDialogueLine ? interpolateName(rawDialogueLine, childName) : undefined;
   const isOnLastDialogue = currentDialogueIndex === (currentScene?.drColi?.say?.length ?? 1) - 1;
 
-  // What shows in the bubble: response text takes priority over scene dialogue
-  const displayedText = responseText ?? currentDialogue;
+  // What shows in the bubble: suppress during sayBefore so Bori's bubble leads visually
+  const displayedText = isSayBeforePlaying ? undefined : (responseText ?? currentDialogue);
 
   // Interaction is "active" when we're on the last dialogue, no pending answer, and Bori has finished speaking
   const showingInteraction = currentScene?.interaction?.type !== "none" && isOnLastDialogue && !interactionResult && !boriLine;
@@ -184,10 +186,33 @@ export default function EpisodePlayerPage() {
   const drColiTalking = isSpeaking || isProcessing || showingInteraction;
 
   // Play current scene dialogue when scene/dialogue index changes.
-  // Non-last lines auto-advance as soon as audio ends — no tap needed between lines.
-  // On the last line, if the scene has a bori.say, Bori speaks before the interaction appears.
+  // If the scene has bori.sayBefore, Bori speaks first before DrColi starts.
+  // Non-last DrColi lines auto-advance; last line triggers bori.say then interaction.
   useEffect(() => {
     if (!lessonStarted) return undefined;
+
+    // sayBefore: play Bori's lines before DrColi starts on scene entry
+    const rawSayBefore = currentScene?.bori?.sayBefore as string | string[] | undefined;
+    if (
+      rawSayBefore &&
+      currentDialogueIndex === 0 &&
+      !isSayBeforePlaying &&
+      sayBeforeSceneRef.current !== currentSceneIndex
+    ) {
+      sayBeforeSceneRef.current = currentSceneIndex;
+      setIsSayBeforePlaying(true);
+      const lines = (Array.isArray(rawSayBefore) ? rawSayBefore : [rawSayBefore])
+        .map(l => interpolateName(l, childName));
+      const playNext = (i: number) => {
+        if (i >= lines.length) { setIsSayBeforePlaying(false); return; }
+        playBoriLine(lines[i], () => playNext(i + 1));
+      };
+      const t = setTimeout(() => playNext(0), 50);
+      return () => clearTimeout(t);
+    }
+
+    if (isSayBeforePlaying) return undefined;
+
     if (currentDialogue && !interactionResult) {
       setResponseText(null);
       setBoriLine(null);
@@ -207,7 +232,7 @@ export default function EpisodePlayerPage() {
       return () => clearTimeout(t);
     }
     return undefined;
-  }, [lessonStarted, currentSceneIndex, currentDialogueIndex]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lessonStarted, currentSceneIndex, currentDialogueIndex, isSayBeforePlaying]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Pre-fetch ALL TTS audio for the current scene the moment it loads.
   // This ensures every play() is a synchronous cache hit — browsers block play()
@@ -225,6 +250,20 @@ export default function EpisodePlayerPage() {
         });
       }
     });
+
+    const rawSayBefore = currentScene?.bori?.sayBefore as string | string[] | undefined;
+    if (rawSayBefore) {
+      const lines = Array.isArray(rawSayBefore) ? rawSayBefore : [rawSayBefore];
+      lines.forEach((rawLine: string) => {
+        const line = interpolateName(rawLine, childName);
+        const cacheKey = `${line}::bori`;
+        if (!ttsCache.has(cacheKey)) {
+          tts({ data: { text: prepareForTts(line), character: "bori" } }, {
+            onSuccess: (res) => ttsCache.set(cacheKey, res.audio),
+          });
+        }
+      });
+    }
 
     const rawBoriSay = currentScene?.bori?.say as string | undefined;
     if (rawBoriSay) {
@@ -412,7 +451,7 @@ export default function EpisodePlayerPage() {
   };
 
   const handleNextDialogue = () => {
-    if (isSpeaking || isProcessing) return;
+    if (isSpeaking || isProcessing || isSayBeforePlaying) return;
     if (showingInteraction) return;
 
     stopCurrentAudio();
@@ -428,6 +467,7 @@ export default function EpisodePlayerPage() {
   };
 
   const advanceScene = () => {
+    setIsSayBeforePlaying(false);
     setInteractionResult(null);
     setResponseText(null);
     setCurrentDialogueIndex(0);

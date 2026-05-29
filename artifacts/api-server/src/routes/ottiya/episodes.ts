@@ -18,127 +18,210 @@ const EPISODES = [
     id: "episode-01",
     title: "안녕하세요! 안녕!",
     background: "bg-puppies.png",
-    sceneCount: 10,
+    sceneCount: 22,
     vocabulary: ["선생님", "안녕하세요", "안녕"],
     completionMessage: "Today we learned 선생님, 안녕하세요, and 안녕!",
     scenes: [
       {
         id: "s0-welcome",
         type: "character_intro",
-        drColi: {
-          animation: "talk",
-          say: ["안녕! Hello, {name}!", "My name is Dr. Coli!"]
-        },
+        drColi: { animation: "wave", say: ["안녕! Hello, {name}!", "My name is Dr. Coli!"] },
         interaction: { type: "none" }
       },
       {
         id: "s0b-intro",
         type: "character_intro",
-        drColi: {
-          animation: "talk",
-          say: ["And this is Bori!", "Bori is learning Korean too.", "Can you help teach her?"]
-        },
-        bori: { animation: "wave", say: "Woof woof!" },
+        drColi: { say: ["And this is Bori!"] },
+        bori: { say: "Woof! Hi, {name}!" },
         interaction: { type: "none" }
       },
       {
-        id: "s1-teach-seonsaengnim",
-        type: "teach_word",
-        drColi: {
-          animation: "talk",
-          say: ["Bori is trying to say 선생님!", "Can you help her, {name}?", "Say 선생님!"]
+        id: "s0b-help",
+        type: "character_intro",
+        drColi: { say: ["Bori is learning Korean too.", "Can you help teach her?"] },
+        bori: { say: "Please?" },
+        interaction: { type: "none" }
+      },
+      {
+        id: "s1-bori-problem",
+        type: "dialogue",
+        drColi: { say: ["Don't worry.", "{name} can help you."] },
+        bori: {
+          sayBefore: ["Uh oh...", "I want to say hello in Korean.", "But I forgot how!"],
+          say: "Really? Yay!"
         },
-        bori: { animation: "look", say: "선...생?" },
+        interaction: { type: "none" }
+      },
+      {
+        id: "s2-bori-forgot",
+        type: "dialogue",
+        drColi: { say: ["First, let's learn a new word.", "I am a 선생님.", "A 선생님 is a teacher."] },
+        bori: { say: "선... 선... I forgot!" },
+        interaction: { type: "none" }
+      },
+      {
+        id: "s2-teach-seonsaengnim",
+        type: "teach_word",
+        drColi: { say: ["Say 선생님!"] },
+        bori: { animation: "look", say: "Can you help me?" },
         taughtWord: { korean: "선생님", english: "teacher", romanization: "seon-saeng-nim", emoji: "👩‍🏫" },
         interaction: {
           type: "mic",
           prompt: "Say 선생님 to help Bori!",
           targetWord: "선생님",
           hint: "seon-saeng-nim",
-          boriOnCorrect: "선생님! Woof!",
-          onCorrectSay: ["You taught Bori!", "Thank you, {name}!"],
-          onWrongSay: ["Almost!", "Let's help Bori again.", "선생님!"]
+          boriOnCorrect: "선생님! I did it!",
+          onCorrectSay: ["You taught Bori!"],
+          onWrongSay: ["Almost!", "Let's help Bori again.", "Say 선생님!"]
         }
       },
       {
-        id: "s2-meet-bori",
-        type: "character_intro",
-        drColi: {
-          animation: "talk",
-          say: ["Wow!", "Bori learned a new word!"]
-        },
-        bori: { animation: "wave", say: "선생님!" },
-        interaction: { type: "none" }
-      },
-      {
-        id: "s2b-keep-going",
-        type: "character_intro",
-        drColi: {
-          animation: "talk",
-          say: ["You're such a great teacher, {name}.", "Let's keep going!"]
-        },
-        bori: { animation: "jump", say: "I want to learn more!" },
-        interaction: { type: "none" }
-      },
-      {
-        id: "s3-intro-annyonghaseyo",
+        id: "s3-practice-seonsaengnim",
         type: "dialogue",
-        drColi: {
-          animation: "talk",
-          say: ["That's how we say hi to friends.", "But Bori wants to say hello politely to 선생님!"]
-        },
-        bori: { animation: "look", say: "안...녕?" },
+        drColi: { say: ["That's right!", "Now Bori knows how to say teacher."] },
+        bori: { say: "선생님! 선생님! Hehe!" },
         interaction: { type: "none" }
       },
       {
-        id: "s3b-annyonghaseyo-prompt",
+        id: "s4-bigger-problem",
         type: "dialogue",
-        drColi: {
-          animation: "talk",
-          say: ["Can you teach Bori?", "Say 안녕하세요!", "And bow a little too!"]
+        drColi: { say: ["Hmm...", "Let's teach Bori."] },
+        bori: {
+          sayBefore: ["Now I know 선생님...", "But how do I say hello to my 선생님?"],
+          say: "I'm ready!"
         },
-        bori: { animation: "look", say: "안녕하세요...?" },
         interaction: { type: "none" }
       },
       {
-        id: "s4-repeat-annyonghaseyo",
-        type: "mic_repeat",
-        bori: { animation: "bow" },
+        id: "s5-bori-forgot",
+        type: "dialogue",
+        drColi: { say: ["Let's help Bori say hello politely!"] },
+        bori: { say: "안... 안녕... I forgot again!" },
+        interaction: { type: "none" }
+      },
+      {
+        id: "s5-teach-annyonghaseyo",
+        type: "teach_word",
+        drColi: { say: ["Say 안녕하세요!"] },
+        bori: { animation: "look", say: "Can you help me?" },
         taughtWord: { korean: "안녕하세요", english: "hello (formal)", romanization: "an-nyeong-ha-se-yo", emoji: "🙇" },
         interaction: {
           type: "mic",
           prompt: "Say 안녕하세요 to help Bori!",
           targetWord: "안녕하세요",
           hint: "an-nyeong-ha-se-yo",
-          boriOnCorrect: "안녕하세요!",
-          onCorrectSay: ["You did it, {name}!", "Thank you!", "Bori sounds so polite now!"],
-          onWrongSay: ["Good try!", "Let's help Bori again.", "안녕하세요!"]
+          boriOnCorrect: "안녕하세요! Wow!",
+          onCorrectSay: ["Great teaching!"],
+          onWrongSay: ["Good try!", "Let's help Bori again.", "Say 안녕하세요!"]
         }
       },
       {
-        id: "s5-emoji-check-annyonghaseyo",
+        id: "s6-learn-bow",
+        type: "dialogue",
+        drColi: { say: ["Great job!", "When we say 안녕하세요...", "We bow to show respect."] },
+        interaction: { type: "none" }
+      },
+      {
+        id: "s6-bow-demo",
+        type: "dialogue",
+        drColi: { animation: "bow", say: ["안녕하세요!", "Can you bow too?"] },
+        bori: { animation: "bow", say: "안녕하세요!" },
+        interaction: { type: "none" }
+      },
+      {
+        id: "s6b-emoji-check-annyonghaseyo",
         type: "emoji_quiz",
-        drColi: {
-          animation: "talk",
-          say: ["When we say 안녕하세요...", "What do we do?"]
-        },
-        bori: { animation: "look", say: "안녕하세요?" },
+        drColi: { animation: "bow", say: ["When we say 안녕하세요...", "What do we do?"] },
+        bori: { animation: "bow", say: "안녕하세요?" },
         interaction: {
           type: "emoji",
           choices: ["🙇‍♀️", "👋", "🏃‍♀️"],
           correctIndex: 0,
-          onCorrectSay: ["Yes! We bow!", "Bow!", "Now Bori remembers too!"],
-          onWrongSay: ["Almost!", "What do we do when we say 안녕하세요?"]
+          onCorrectSay: ["That's right! We bow.", "안녕하세요!"],
+          onWrongSay: ["Almost!", "When we say 안녕하세요, we bow."]
         }
       },
       {
-        id: "s6-intro-annyong",
+        id: "s7-annyong-intro",
         type: "dialogue",
-        drColi: {
-          animation: "talk",
-          say: ["That's right!", "We say 안녕 when we say hello and bye to friends!", "Can you wave and say 안녕 too?"]
+        drColi: { say: ["Sometimes we say 안녕 too.", "We say 안녕 to our friends.", "Of course! Let's practice."] },
+        bori: {
+          sayBefore: ["Oh!"],
+          say: "I want to say hello to {name}! Can we be friends?"
         },
-        bori: { animation: "wave", say: "안녕!" },
+        interaction: { type: "none" }
+      },
+      {
+        id: "s7-teach-annyong",
+        type: "teach_word",
+        drColi: { say: ["Say 안녕!"] },
+        bori: { animation: "look", say: "Can you help me?" },
+        taughtWord: { korean: "안녕", english: "hello / goodbye", romanization: "an-nyeong", emoji: "👋" },
+        interaction: {
+          type: "mic",
+          prompt: "Say 안녕 to help Bori!",
+          targetWord: "안녕",
+          hint: "an-nyeong",
+          boriOnCorrect: "안녕! Hi, {name}! I'm your friend!",
+          onCorrectSay: ["Amazing!"],
+          onWrongSay: ["Let's try again.", "Say 안녕!"]
+        }
+      },
+      {
+        id: "s8-learn-wave",
+        type: "dialogue",
+        drColi: { say: ["When we say 안녕...", "We wave to our friends."] },
+        interaction: { type: "none" }
+      },
+      {
+        id: "s8-wave-demo",
+        type: "dialogue",
+        drColi: { animation: "wave", say: ["안녕!", "Can you wave too?"] },
+        bori: { say: "안녕!" },
+        interaction: { type: "none" }
+      },
+      {
+        id: "s8b-emoji-check-annyong",
+        type: "emoji_quiz",
+        drColi: { animation: "wave", say: ["When we say 안녕...", "What do we do?"] },
+        bori: { say: "안녕?" },
+        interaction: {
+          type: "emoji",
+          choices: ["🙇‍♀️", "👋", "🏃‍♀️"],
+          correctIndex: 1,
+          onCorrectSay: ["That's right! We wave.", "안녕!"],
+          onWrongSay: ["Almost!", "When we say 안녕, we wave."]
+        }
+      },
+      {
+        id: "s9-big-moment",
+        type: "dialogue",
+        drColi: { say: ["Bori...", "Are you ready?", "Let's say it together!"] },
+        bori: {
+          sayBefore: ["I think so..."],
+          say: "{name}, will you help me?"
+        },
+        interaction: { type: "none" }
+      },
+      {
+        id: "s9b-bow",
+        type: "dialogue",
+        drColi: { say: ["Bori, show {name} what you've learned!"] },
+        bori: { animation: "bow", say: "안녕하세요, 선생님!" },
+        interaction: { type: "none" }
+      },
+      {
+        id: "s9c-wave",
+        type: "dialogue",
+        drColi: { animation: "wave", say: ["안녕, {name}!"] },
+        bori: { say: "We did it! Thank you for teaching me!" },
+        interaction: { type: "none" }
+      },
+      {
+        id: "s10-memory",
+        type: "celebration",
+        drColi: { say: ["Great job, {name}.", "Let's learn more Korean together tomorrow!"] },
+        bori: { say: "I'm so happy! Now I can say hello in Korean! And I made a new friend too." },
         interaction: { type: "none" }
       }
     ]

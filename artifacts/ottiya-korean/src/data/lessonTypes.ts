@@ -30,6 +30,7 @@ export interface BoriConfig {
   // Early lessons: "Woof!", "Woof woof!"
   // Later lessons: known Korean words she's learned ("안녕!", "네!")
   say?: string;
+  sayBefore?: string | string[];  // played before DrColi starts; use when Bori emotionally leads the scene
 }
 
 // ─── Taught word ──────────────────────────────────────────────────────────────
