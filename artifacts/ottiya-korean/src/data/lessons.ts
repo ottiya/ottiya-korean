@@ -68,9 +68,8 @@ export const LESSON_1: LessonDefinition = {
       type: "character_intro",
       drColi: {
         animation: "talk",
-        say: ["안녕! Hello, {name}!", "I'm Dr. Coli!"],
+        say: ["안녕! Hello, {name}!", "My name is Dr. Coli!"],
       },
-      bori: { animation: "wave", say: "Woof woof!" },
       interaction: { type: "none" },
     },
     {
@@ -80,6 +79,7 @@ export const LESSON_1: LessonDefinition = {
         animation: "talk",
         say: ["And this is Bori!", "Bori is learning Korean too.", "Can you help teach her?"],
       },
+      bori: { animation: "wave", say: "Woof woof!" },
       interaction: { type: "none" },
     },
     {
@@ -126,7 +126,7 @@ export const LESSON_1: LessonDefinition = {
       type: "dialogue",
       drColi: {
         animation: "talk",
-        say: ["That's how we say hi to friends.", "But Bori wants to say hello politely!"],
+        say: ["That's how we say hi to friends.", "But Bori wants to say hello politely to 선생님!"],
       },
       bori: { animation: "look", say: "안...녕?" },
       interaction: { type: "none" },
@@ -177,7 +177,7 @@ export const LESSON_1: LessonDefinition = {
       type: "dialogue",
       drColi: {
         animation: "talk",
-        say: ["That's right!", "We say 안녕 to friends!", "Can you wave and say 안녕 too?"],
+        say: ["That's right!", "We say 안녕 when we say hello and bye to friends!", "Can you wave and say 안녕 too?"],
       },
       bori: { animation: "wave", say: "안녕!" },
       interaction: { type: "none" },
