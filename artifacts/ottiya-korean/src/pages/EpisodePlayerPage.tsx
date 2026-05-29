@@ -724,10 +724,10 @@ export default function EpisodePlayerPage() {
           {/* Characters celebrating at bottom */}
           <div className="flex items-end justify-center gap-4 w-full max-w-xs mb-4">
             <div style={{ width: "38%", maxWidth: "160px" }}>
-              <DrColiSprite isTalking={isSpeaking} />
+              <DrColiSprite animation="talk" isTalking={isSpeaking} />
             </div>
             <div style={{ width: "28%", maxWidth: "120px" }}>
-              <BoriSprite isAnimating={true} />
+              <BoriSprite animation="wave" isAnimating={true} />
             </div>
           </div>
 
@@ -907,7 +907,10 @@ export default function EpisodePlayerPage() {
           {/* ── CHARACTERS STRIP — fixed tall band at bottom ── */}
           <div className="flex-shrink-0 flex items-end justify-between px-2 pb-2 h-[42vh]">
             <div className="w-[55%] max-w-[280px]">
-              <DrColiSprite isTalking={drColiTalking || isCompleted} />
+              <DrColiSprite
+                animation={(currentScene?.drColi?.animation as any) ?? "talk"}
+                isTalking={drColiTalking || isCompleted}
+              />
             </div>
             <div className="w-[40%] max-w-[200px] relative">
               {/* Bori speech bubble — appears when she vocalises */}
@@ -917,7 +920,10 @@ export default function EpisodePlayerPage() {
                   <div className="absolute bottom-0 right-6 translate-y-full w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white/95" />
                 </div>
               )}
-              <BoriSprite isAnimating={isBoriSpeaking || currentScene?.bori?.animation !== "look" || showingInteraction} />
+              <BoriSprite
+                animation={(currentScene?.bori?.animation as any) ?? "wave"}
+                isAnimating={isBoriSpeaking || currentScene?.bori?.animation !== "look" || showingInteraction}
+              />
             </div>
           </div>
         </>
